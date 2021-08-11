@@ -51,7 +51,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2880739311313974455}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bf1b6186dc762a418b337954785dfc5, type: 3}
   m_Name: 
@@ -410,6 +410,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1567629565561446568}
     m_Modifications:
+    - target: {fileID: -6967053430128840390, guid: c717f817a496cf247a92b830b355a407, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 4306860098056932, guid: 9c47d3ce2208e9440ab03e7fe3e32bcf, type: 3}
+    - target: {fileID: -6967053430128840390, guid: c717f817a496cf247a92b830b355a407, type: 3}
+      propertyPath: MAXITER
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -6967053430128840390, guid: c717f817a496cf247a92b830b355a407, type: 3}
+      propertyPath: agentPrefab
+      value: 
+      objectReference: {fileID: 2880739311313974455}
+    - target: {fileID: -6967053430128840390, guid: c717f817a496cf247a92b830b355a407, type: 3}
+      propertyPath: globalBestPrefab
+      value: 
+      objectReference: {fileID: 2880739311313974455}
     - target: {fileID: 1046869630431942, guid: c717f817a496cf247a92b830b355a407, type: 3}
       propertyPath: m_Name
       value: FantasyBee

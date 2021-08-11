@@ -5,14 +5,15 @@ using UnityEngine;
 public class PSO : MonoBehaviour
 {
     public GameObject agentPrefab;
-    public GameObject globalBestPrefab;
-    float sizeX = 30;
-    float sizeY = 9;
+    public GameObject particlePrefab;
+    //public GameObject globalBestPrefab;
+    //float sizeX = 30;
+    //float sizeY = 9;
 
     public int popsize = 20;// population size
-    public int MAXITER = 3000;  // Maximum number of iterations
+    public int MAXITER = 10;  // Maximum number of iterations
 
-    float gBestCost = float.MaxValue;
+    float gBestCost; //= float.MaxValue;
     int bestParticle;
     Vector3[] geschwindigkeit;
     Vector3[] positions;
@@ -28,7 +29,12 @@ public class PSO : MonoBehaviour
     private int iteration = 0;
     public float c1 = 2;
     public float c2 = 2;
-    GameObject globalBest;
+
+    GameObject agent;
+    Vector3 agentPos;
+    float xMax;
+    float yMax;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -39,8 +45,14 @@ public class PSO : MonoBehaviour
         geschwindigkeit = new Vector3[popsize];
         positions = new Vector3[popsize];
 
+        agent = GameObject.FindGameObjectWithTag("FantasyBee");
+        agentPos = agent.GetComponent<Transform>().position;
+        target = GameObject.FindGameObjectWithTag("Flower2").GetComponent<Transform>();
+        initPopulation();
+        StartCoroutine("RunPSO");
+
         //gBest bestimmen
-        for (int i = 0; i < popsize; i++)
+        /*for (int i = 0; i < popsize; i++)
         {
             Vector2 pos = new Vector2(Random.Range(-sizeX, sizeX), Random.Range(-sizeY, sizeY));
             particles[i] = Instantiate(agentPrefab, pos, Quaternion.identity);
@@ -66,48 +78,67 @@ public class PSO : MonoBehaviour
 
         //PSO durchführen
         StartCoroutine("RunPSO");
-       
+       */
     }
 
     //PSO-Algorithmus ausführen
     IEnumerator RunPSO()
     {
-        //Solange Durchläufe nicht höher als MaxDurchläufe sind
-        while (iteration < MAXITER)
+        int j = 0;
+        while (Vector3.Distance(agentPos, target.position) >= 1)
         {
-            iteration++;
-            Debug.Log("gBestCost " + gBestCost);
-
-            //Epoche
-            for (int i = 0; i < popsize; i++)
+            j++;
+            Debug.Log("j: " + j);
+            while (iteration < MAXITER)
             {
-                //Geschwindigkeit des Partikels bestimmen
-                Vector2 vel = Vector3.ClampMagnitude(getVelocity(geschwindigkeit[i], positions[i], pBestPositions[i]), maxVelocity);//.normalized;
-                //neue Position berechnen
-                Vector2 pos = getPosition(positions[i], vel);
-                //Distanz bestimmen zum Ziel
-                float cost = Vector3.Distance(target.position, pos);
-                Debug.Log("cost " + cost);
-
-                //Wenn Distanz geringer als gBest-Distanz -> ersetzen
-                if (cost < gBestCost)
+                iteration++;
+                Debug.Log("gBestCost " + gBestCost);
+                for (int i = 0; i < popsize; i++)
                 {
-                    gBestCost = cost;
-                    bestParticle = i;
-                    gBestPosition = pos;
+                    Vector2 vel = Vector3.ClampMagnitude(getVelocity(geschwindigkeit[i], positions[i], pBestPositions[i]), maxVelocity);//.normalized;
+                    Vector2 pos = getPosition(positions[i], vel);
+                    if (pos.x > xMax)
+                    {
+                        pos.x = xMax;
+                    }
+                    if (pos.y > yMax)
+                    {
+                        pos.y = yMax;
+                    }
+                    float cost = Vector3.Distance(target.position, pos);
+                    if (cost < gBestCost)
+                    {
+                        gBestCost = cost;
+                        bestParticle = i;
+                        gBestPosition = pos;
+                    }
+                    if (cost < pBestCosts[i])
+                    {
+                        pBestCosts[i] = cost;
+                        pBestPositions[i] = pos;
+                    }
+                    positions[i] = pos;
+                    geschwindigkeit[i] = vel;
+                    particles[i].transform.position = pos;
                 }
-                //geringere neue Distanz des Partikels speichern
-                if (cost < pBestCosts[i])
+                if (iteration < MAXITER)
                 {
-                    pBestCosts[i] = cost;
-                    pBestPositions[i] = pos;
+                    yield return new WaitForSeconds(waitTime);
                 }
-                positions[i] = pos;
-                geschwindigkeit[i] = vel;
-                particles[i].transform.position = pos;
+                else
+                {
+                    Debug.Log("gBestPosition " + gBestPosition);
+                    agent.transform.position = gBestPosition;
+                    yield return new WaitForSeconds(waitTime);
+                }
             }
-            showGlobalBest();
-            yield return new WaitForSeconds(waitTime);
+            agentPos = gBestPosition;
+            iteration = 0;
+            clearPopulation();
+            if (Vector3.Distance(agentPos, target.position) >= 1)
+            {
+                initPopulation();
+            }
         }
     }
 
@@ -135,14 +166,37 @@ public class PSO : MonoBehaviour
         return startInertia - ((startInertia - endInertia) * iteration / MAXITER);
     }
 
-    //GlobalBest anzeigen
-    void showGlobalBest()
+    void initPopulation()
     {
-        if (globalBest != null)
+        xMax = agentPos.x + 1;
+        yMax = agentPos.y + 1;
+        gBestCost = float.MaxValue;
+        for (int i = 0; i < popsize; i++)
         {
-            Destroy(globalBest);
+            Vector2 pos = new Vector2(Random.Range(agentPos.x - 1, agentPos.x + 1), Random.Range(agentPos.y - 1, agentPos.y + 1));
+            particles[i] = Instantiate(particlePrefab, pos, Quaternion.identity);
+            float cost = Vector3.Distance(target.position, pos);
+            if (cost < gBestCost)
+            {
+                gBestCost = cost;
+                bestParticle = i;
+                gBestPosition = pos;
+            }
+            pBestPositions[i] = pos;
+            pBestCosts[i] = cost;
+            positions[i] = pos;
+            geschwindigkeit[i] = Vector3.ClampMagnitude(pos, maxVelocity);//.normalized;
         }
-        globalBest = Instantiate(globalBestPrefab, gBestPosition, Quaternion.identity);
     }
+
+    void clearPopulation()
+    {
+        for (int i = 0; i < particles.Length; i++)
+        {
+            Destroy(particles[i]);
+        }
+    }
+
+
 }
 
