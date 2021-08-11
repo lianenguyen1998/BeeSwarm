@@ -40,10 +40,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4549644435828676}
   - component: {fileID: 95333843763016992}
-  - component: {fileID: -1621465177243152737}
+  - component: {fileID: 764494943087009200}
   m_Layer: 0
   m_Name: FantasyBee
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -83,7 +83,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &-1621465177243152737
+--- !u!114 &764494943087009200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,7 +96,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentPrefab: {fileID: 1046869630431942}
-  particlePrefab: {fileID: 1046869630431942}
   popsize: 20
   MAXITER: 10
   target: {fileID: 4306860098056932, guid: 9c47d3ce2208e9440ab03e7fe3e32bcf, type: 3}

@@ -5,17 +5,13 @@ using UnityEngine;
 public class PSO : MonoBehaviour
 {
     public GameObject agentPrefab;
-    public GameObject particlePrefab;
-    //public GameObject globalBestPrefab;
-    //float sizeX = 30;
-    //float sizeY = 9;
 
     public int popsize = 20;// population size
     public int MAXITER = 10;  // Maximum number of iterations
 
     float gBestCost; //= float.MaxValue;
     int bestParticle;
-    Vector3[] geschwindigkeit;
+    Vector3[] geschwindigkeiten;
     Vector3[] positions;
     Vector3[] pBestPositions;
     float[] pBestCosts;
@@ -42,43 +38,14 @@ public class PSO : MonoBehaviour
         particles = new GameObject[popsize];
         pBestCosts = new float[popsize];
         pBestPositions = new Vector3[popsize];
-        geschwindigkeit = new Vector3[popsize];
+        geschwindigkeiten = new Vector3[popsize];
         positions = new Vector3[popsize];
 
-        agent = GameObject.FindGameObjectWithTag("FantasyBee");
+        agent = GameObject.FindGameObjectWithTag("Player");
         agentPos = agent.GetComponent<Transform>().position;
-        target = GameObject.FindGameObjectWithTag("Flower2").GetComponent<Transform>();
+        target = GameObject.FindGameObjectWithTag("Target").GetComponent<Transform>();
         initPopulation();
         StartCoroutine("RunPSO");
-
-        //gBest bestimmen
-        /*for (int i = 0; i < popsize; i++)
-        {
-            Vector2 pos = new Vector2(Random.Range(-sizeX, sizeX), Random.Range(-sizeY, sizeY));
-            particles[i] = Instantiate(agentPrefab, pos, Quaternion.identity);
-            //distanz zum gBest
-            float cost = Vector3.Distance(target.position, pos);
-
-            //Wenn Distanz kleiner als gBest-Distanz ist -> ersetzen
-            if (cost < gBestCost)
-            {
-                gBestCost = cost;
-                bestParticle = i;
-                gBestPosition = pos;
-            }
-
-            //Werte des Partikels speichern
-            pBestPositions[i] = pos;
-            pBestCosts[i] = cost;
-            positions[i] = pos;
-            geschwindigkeit[i] = Vector3.ClampMagnitude(pos, maxVelocity);//.normalized;
-        }
-
-        showGlobalBest();
-
-        //PSO durchführen
-        StartCoroutine("RunPSO");
-       */
     }
 
     //PSO-Algorithmus ausführen
@@ -95,7 +62,7 @@ public class PSO : MonoBehaviour
                 Debug.Log("gBestCost " + gBestCost);
                 for (int i = 0; i < popsize; i++)
                 {
-                    Vector2 vel = Vector3.ClampMagnitude(getVelocity(geschwindigkeit[i], positions[i], pBestPositions[i]), maxVelocity);//.normalized;
+                    Vector2 vel = Vector3.ClampMagnitude(getVelocity(geschwindigkeiten[i], positions[i], pBestPositions[i]), maxVelocity);//.normalized;
                     Vector2 pos = getPosition(positions[i], vel);
                     if (pos.x > xMax)
                     {
@@ -118,7 +85,7 @@ public class PSO : MonoBehaviour
                         pBestPositions[i] = pos;
                     }
                     positions[i] = pos;
-                    geschwindigkeit[i] = vel;
+                    geschwindigkeiten[i] = vel;
                     particles[i].transform.position = pos;
                 }
                 if (iteration < MAXITER)
@@ -174,7 +141,7 @@ public class PSO : MonoBehaviour
         for (int i = 0; i < popsize; i++)
         {
             Vector2 pos = new Vector2(Random.Range(agentPos.x - 1, agentPos.x + 1), Random.Range(agentPos.y - 1, agentPos.y + 1));
-            particles[i] = Instantiate(particlePrefab, pos, Quaternion.identity);
+            particles[i] = Instantiate(agentPrefab, pos, Quaternion.identity);
             float cost = Vector3.Distance(target.position, pos);
             if (cost < gBestCost)
             {
@@ -185,7 +152,7 @@ public class PSO : MonoBehaviour
             pBestPositions[i] = pos;
             pBestCosts[i] = cost;
             positions[i] = pos;
-            geschwindigkeit[i] = Vector3.ClampMagnitude(pos, maxVelocity);//.normalized;
+            geschwindigkeiten[i] = Vector3.ClampMagnitude(pos, maxVelocity);//.normalized;
         }
     }
 
