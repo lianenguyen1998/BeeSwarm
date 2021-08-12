@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PSO : MonoBehaviour
 {
+    //für maja
     public GameObject agentPrefab;
 
     public int popsize = 20;// population size
